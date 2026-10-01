@@ -1,0 +1,15 @@
+* {
+    color:purple;
+}
+
+div {
+    color:red;
+}
+
+.alert-text {
+    color:orange;
+}
+
+#title {
+    background-color:blue;
+}
