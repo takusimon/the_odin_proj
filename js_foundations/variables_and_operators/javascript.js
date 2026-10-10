@@ -12,6 +12,12 @@ age = 25;
 console.log (age); //change the value of age & output to console
 
 const pi = 3.14;
-pi = 11;
 
-console.log(pi); //output should be 3.14
+
+console.log(pi); //Error can't change the value of a constant
+
+console.log (23 + 97);
+
+console.log (17+18+19+20+34+2);
+
+console.log((4+6+9)/77);
