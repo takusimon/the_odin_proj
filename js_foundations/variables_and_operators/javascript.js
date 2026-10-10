@@ -10,3 +10,8 @@ console.log (age); //output 11 to console
 
 age = 25;
 console.log (age); //change the value of age & output to console
+
+const pi = 3.14;
+pi = 11;
+
+console.log(pi); //output should be 3.14
