@@ -1,18 +1,12 @@
-const sumAll = function(minValue,maxValue) {
-    if (!(minValue >= 0 && maxValue >= 0)) {
-        return "ERROR";
-    }
-    if (minValue > maxValue) {
-        [minValue,maxValue] = [maxValue, minValue];
-    }
-
-    let sum = 0;
-
-    for (let i = minValue;i <= maxValue; i++){
-        sum += i;
-    }
-
-    return sum;
+const factorial = function(n) {
+  let answer = 1;
+  if (n === 0 || n === 1){
+    return 1;
+  }
+	for (;n > 0;n--) {
+    answer += n * (n-1);
+  }
+  return answer;
 };
 
-console.log(sumAll(123,1));
+console.log(factorial(2));
