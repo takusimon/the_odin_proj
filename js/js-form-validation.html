@@ -15,21 +15,21 @@
 
       form {
         border: 1px solid black;
-        width:25rem;
+        width: 25rem;
         max-width: 100%;
         box-sizing: border-box;
         display: flex;
         flex-flow: column;
         gap: 2rem;
         align-items: center;
-        padding:1rem;
+        padding: 1rem;
       }
       form > div {
         display: flex;
         flex-flow: column;
         gap: 0.5rem;
         height: auto;
-        width:100%;
+        width: 100%;
       }
       input,
       select {
@@ -56,7 +56,7 @@
         background-color: #990000;
         border-radius: 5px;
         box-sizing: border-box;
-        overflow-wrap:break-word;
+        overflow-wrap: break-word;
       }
       input:user-invalid {
         outline: 2px solid #990000;
@@ -91,7 +91,7 @@
         <input type="text" id="postal-code" required name="postal" />
         <span id="postal-error" class="error"></span>
       </div>
-      <div id="password-containere">
+      <div id="password-container">
         <label for="password-input">Password:</label>
         <input
           type="password"
@@ -99,92 +99,150 @@
           maxlength="25"
           required
           name="password"
+          id="password-input"
+          pattern="(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9\s]).*"
         />
+        <span id="password-error" class="error" ?></span>
       </div>
       <div id="confirm-password-container">
         <label for="confirm-password">Confirm Password:</label>
-        <input type="password" required />
+        <input type="password" required id="confirm-password" />
+        <span id="confirm-password-error" class="error"></span>
       </div>
       <input type="submit" value="Validate" />
     </form>
     <script>
-          const form = document.querySelector("form");
-          const email = document.getElementById("email-input");
-          const emailErr = document.getElementById("email-error");
-          const countrySelect = document.querySelector("#country-select");
-          const postalCode = document.querySelector("#postal-code");
-          const postalErr = document.getElementById("postal-error")
+      const form = document.querySelector("form");
+      const email = document.getElementById("email-input");
+      const emailErr = document.getElementById("email-error");
+      const countrySelect = document.querySelector("#country-select");
+      const postalCode = document.querySelector("#postal-code");
+      const postalErr = document.getElementById("postal-error");
+      const password = document.getElementById("password-input");
+      const passwordErr = document.getElementById("password-error");
+      const confirmPassword = document.getElementById("confirm-password");
+      const confirmPasswordErr = document.getElementById(
+        "confirm-password-error",
+      );
 
-          email.addEventListener("input", () => {
-            if (email.validity.valid && email.value.endsWith("@gmail.com")) {
-              emailErr.textContent = "";
-              emailErr.className = "error";
-            } else {
-              showEmailError();
-            }
-          });
+      email.addEventListener("input", () => {
+        if (email.validity.valid && email.value.endsWith("@gmail.com")) {
+          emailErr.textContent = "";
+          emailErr.className = "error";
+        } else {
+          showEmailError();
+        }
+      });
 
-          form.addEventListener("submit", (event) => {
-            if (!email.validity.valid || !email.value.endsWith("@gmail.com")) {
-              showEmailError();
-            }
+      password.addEventListener("input", () => {
+        if (password.validity.valid) {
+          passwordErr.textContent = "";
+          passwordErr.className = "error";
+        } else {
+          showPasswordError();
+        }
+      });
+      confirmPassword.addEventListener("input",() => {
+        if (confirmPassword.validity.valid && password.value === confirmPassword.value){
+          confirmPasswordErr.textContent = "";
+          confirmPasswordErr.className = "error";
+        } else {
+          showConfirmPasswordError();
+        }
+      })
+      form.addEventListener("submit", (event) => {
+        if (!email.validity.valid || !email.value.endsWith("@gmail.com")) {
+          showEmailError();
+        }
+        if (!postalCode.validity.valid) {
+          checkPostalCode();
+        }
+        if (!password.validity.valid) {
+          showPasswordError();
+        }
+        if (!confirmPassword.validity.valid && password.value !== confirmPassword.value) {
+          showConfirmPasswordError();
+        }
+        event.preventDefault();
+      });
 
-            event.preventDefault();
-          });
 
-          function showEmailError() {
-            if (email.validity.valueMissing) {
-              emailErr.textContent = "This field is required";
-            } else if (email.validity.typeMismatch) {
-              emailErr.textContent =
-                "This filed expects a valid @gmail.com address";
-            } else if (!email.value.endsWith("@gmail.com")) {
-              emailErr.textContent = "Please enter an email address of @gmail.com";
-            }
+      function showEmailError() {
+        if (email.validity.valueMissing) {
+          emailErr.textContent = "This field is required";
+        } else if (email.validity.typeMismatch) {
+          emailErr.textContent =
+            "This filed expects a valid @gmail.com address";
+        } else if (!email.value.endsWith("@gmail.com")) {
+          emailErr.textContent = "Please enter an email address of @gmail.com";
+        }
 
-            emailErr.className = "error active";
-          }
+        emailErr.className = "error active";
+      }
 
-          function checkPostalCode() {
-      // For each country, defines the pattern that the postal code has to follow
-      const constraints = {
-        us: [
-          "^\\d{5}(?:[-\s]\d{4})?$",
-          "US postal code can be in the five digit format or the full 9 digit format with or without the -: e.g. 75035 or 75035-0010"
+      function showPasswordError() {
+        if (password.validity.valueMissing) {
+          passwordErr.textContent = "This field is required";
+        } else if (password.validity.tooShort) {
+          passwordErr.textContent = "Password must be at least 8 char";
+        } else if (password.validity.patternMismatch) {
+          passwordErr.textContent =
+            "Password must contain at least one uppercase letter, special character and a digit";
+        } else if (password.validity.tooLong) {
+          passwordErr.textContent = "Password Can't be greater than 25 char";
+        }
 
-        ],
-        ch: [
-          "^(CH-)?\\d{4}$",
-          "Swiss postal codes must have exactly 4 digits: e.g. CH-1950 or 1950",
-        ],
-        fr: [
-          "^(F-)?\\d{5}$",
-          "French postal codes must have exactly 5 digits: e.g. F-75012 or 75012",
-        ],
-        de: [
-          "^(D-)?\\d{5}$",
-          "German postal codes must have exactly 5 digits: e.g. D-12345 or 12345",
-        ],
-        nl: [
-          "^(NL-)?\\d{4}\\s*([A-RT-Z][A-Z]|S[BCE-RT-Z])$",
-          "Dutch postal codes must have exactly 4 digits, followed by 2 letters except SA, SD and SS",
-        ],
-      };
+        passwordErr.className = "error active";
+      }
+
+      function showConfirmPasswordError(){
+        if (password.validity.valueMissing){
+          confirmPasswordErr.textContent = "This field is required"
+        } else if (password.value !== confirmPassword.value) {
+          confirmPasswordErr.textContent = "Passwords Do not match";
+        }
+
+        confirmPasswordErr.className = "error active"
+      }
+      function checkPostalCode() {
+        // For each country, defines the pattern that the postal code has to follow
+        const constraints = {
+          us: [
+            "^\\d{5}(?:[-\\s]\\d{4})?$",
+            "US postal code can be in the five digit format or the full 9 digit format with or without the -: e.g. 75035 or 75035-0010",
+          ],
+          ch: [
+            "^(CH-)?\\d{4}$",
+            "Swiss postal codes must have exactly 4 digits: e.g. CH-1950 or 1950",
+          ],
+          fr: [
+            "^(F-)?\\d{5}$",
+            "French postal codes must have exactly 5 digits: e.g. F-75012 or 75012",
+          ],
+          de: [
+            "^(D-)?\\d{5}$",
+            "German postal codes must have exactly 5 digits: e.g. D-12345 or 12345",
+          ],
+          nl: [
+            "^(NL-)?\\d{4}\\s*([A-RT-Z][A-Z]|S[BCE-RT-Z])$",
+            "Dutch postal codes must have exactly 4 digits, followed by 2 letters except SA, SD and SS",
+          ],
+        };
 
         const country = countrySelect.value;
 
-        const constraint = new RegExp(constraints[country][0],"");
-        
-        if(constraint.test(postalCode.value)){
-            postalErr.textContent = "";
-            postalErr.className = "error";
-          } else {
-            postalErr.textContent = constraints[country][1];
-            postalErr.className = "error active";
-          }
-          }
-          countrySelect.addEventListener("change",checkPostalCode);
-          postalCode.addEventListener("input",checkPostalCode);
+        const constraint = new RegExp(constraints[country][0], "");
+
+        if (constraint.test(postalCode.value)) {
+          postalErr.textContent = "";
+          postalErr.className = "error";
+        } else {
+          postalErr.textContent = constraints[country][1];
+          postalErr.className = "error active";
+        }
+      }
+      countrySelect.addEventListener("change", checkPostalCode);
+      postalCode.addEventListener("input", checkPostalCode);
     </script>
   </body>
 </html>
